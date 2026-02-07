@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login / Register - Online Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="login-page">
+    <header class="header">
+      <div class="header-content">
+        <a href="/" class="logo">ONLINE SHOP</a>
+        <nav class="header-nav">
+          <a href="/">Home</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="login-container">
+      <div class="login-wrapper">
+        <div class="login-tabs">
+          <button class="tab-btn active" data-tab="login">Login</button>
+          <button class="tab-btn" data-tab="register">Register</button>
+        </div>
+
+        <div class="login-card" id="loginCard">
+          <h2>Welcome back</h2>
+          <p class="subtitle">Sign in to your account</p>
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" required placeholder="your@email.com" />
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" required placeholder="••••••••" />
+            </div>
+            <button type="submit" class="btn-primary">Sign In</button>
+          </form>
+          <p class="switch-text">
+            Don't have an account? <a href="#" id="switchToRegister">Register here</a>
+          </p>
+        </div>
+
+        <div class="login-card" id="registerCard" hidden>
+          <h2>Create account</h2>
+          <p class="subtitle">Join us and start shopping</p>
+          <form id="registerForm">
+            <div class="form-group">
+              <label for="registerName">Name</label>
+              <input type="text" id="registerName" required placeholder="Your name" />
+            </div>
+            <div class="form-group">
+              <label for="registerEmail">Email</label>
+              <input type="email" id="registerEmail" required placeholder="your@email.com" />
+            </div>
+            <div class="form-group">
+              <label for="registerPassword">Password</label>
+              <input type="password" id="registerPassword" minlength="6" required placeholder="At least 6 characters" />
+            </div>
+            <div class="form-group">
+              <label for="registerRole">I want to</label>
+              <select id="registerRole">
+                <option value="user">Buy products</option>
+                <option value="seller">Sell products</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-primary">Create Account</button>
+          </form>
+          <p class="switch-text">
+            Already have an account? <a href="#" id="switchToLogin">Login here</a>
+          </p>
+        </div>
+
+        <div id="loginError" class="error-message" hidden></div>
+      </div>
+    </main>
+
+    <script src="login.js"></script>
+  </body>
+</html>

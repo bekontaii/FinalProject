@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Online Shop - Clothes, Gadgets, Cosmetics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <a href="/" class="logo">ONLINE SHOP</a>
+        <nav class="header-nav">
+          <a href="/" class="nav-link active">WOMEN</a>
+          <a href="/" class="nav-link">MEN</a>
+        </nav>
+        <div class="header-actions">
+          <div class="search-box">
+            <input type="text" placeholder="Search for items and brands" id="searchInput" />
+            <span class="search-icon">🔍</span>
+          </div>
+          <div class="header-icons">
+            <a href="/login.html" class="icon-link" id="profileIcon">
+              <span>👤</span>
+              <span class="icon-label">Account</span>
+            </a>
+            <button class="icon-link" id="cartIcon">
+              <span>🛒</span>
+              <span class="icon-label">Bag</span>
+              <span class="cart-badge" id="cartBadge" hidden>0</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="promo-banner">
+      <div class="promo-content">
+        <p>New here? Get 15% off when you subscribe to our regular updates*. Use code: <strong>HALLO</strong></p>
+      </div>
+    </div>
+
+    <main class="container">
+      <div class="user-bar" id="userBar" hidden>
+        <div class="user-info">
+          <span>Welcome, <strong id="userName"></strong></span>
+          <span class="user-role" id="userRole"></span>
+          <a href="/admin.html" id="adminLink" class="admin-link" hidden>Admin Panel</a>
+        </div>
+        <button id="logoutBtn" class="btn-secondary">Logout</button>
+      </div>
+
+      <section class="hero-section">
+        <div class="hero-content">
+          <h1>This is Online Shop</h1>
+          <p>Discover the latest trends in fashion, tech, and beauty</p>
+        </div>
+      </section>
+
+      <section class="products-section">
+        <div class="section-header">
+          <h2>Shop by Category</h2>
+          <div class="category-filters">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="clothes">Clothes</button>
+            <button class="filter-btn" data-category="gadgets">Gadgets</button>
+            <button class="filter-btn" data-category="cosmetics">Cosmetics</button>
+          </div>
+        </div>
+
+        <div id="productsGrid" class="products-grid"></div>
+      </section>
+
+      <section class="seller-section" id="sellerSection" hidden>
+        <div class="card">
+          <h2>Add New Product</h2>
+          <form id="productForm">
+            <input type="hidden" id="productId" />
+            <div class="form-row">
+              <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" required />
+              </div>
+              <div class="form-group">
+                <label for="productCategory">Category</label>
+                <select id="productCategory" required>
+                  <option value="clothes">Clothes</option>
+                  <option value="gadgets">Gadgets</option>
+                  <option value="cosmetics">Cosmetics</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="productPrice">Price ($)</label>
+                <input type="number" id="productPrice" min="0" step="0.01" required />
+              </div>
+              <div class="form-group">
+                <label for="productImageUrl">Image URL</label>
+                <input type="url" id="productImageUrl" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="productDescription">Description</label>
+              <textarea id="productDescription" rows="3"></textarea>
+            </div>
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" id="productInStock" checked />
+                In stock
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">Save Product</button>
+              <button type="button" id="resetProductForm" class="btn-secondary">Clear</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Your Products</h2>
+            <button id="reloadProducts" class="btn-secondary small">Reload</button>
+          </div>
+          <div id="sellerProductsList" class="products-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+      <div class="cart-header">
+        <h2>Shopping Bag</h2>
+        <button class="cart-close" id="closeCart">×</button>
+      </div>
+      <div class="cart-items" id="cartItems">
+        <p class="empty-cart">Your bag is empty</p>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <strong>Total: $<span id="cartTotal">0.00</span></strong>
+        </div>
+        <button class="btn-primary" id="checkoutBtn" disabled>Checkout</button>
+      </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

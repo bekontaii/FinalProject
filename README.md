@@ -36,7 +36,14 @@ PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 NODE_ENV=development
+
+# API Keys (optional - for APIs that require authentication)
+# Get your RapidAPI key from: https://rapidapi.com/
+RAPIDAPI_KEY=your_rapidapi_key_here
+RAPIDAPI_HOST=your_rapidapi_host_here
 ```
+
+**Note:** `RAPIDAPI_KEY` and `RAPIDAPI_HOST` are optional. If not provided, the app will use free public APIs without authentication.
 
 3. Run the server:
 
@@ -202,8 +209,30 @@ Base path: `/api/products`
   - Returns **404** when a resource is not found.
   - Returns **500** for server errors.
 
+### Performance Optimizations
+
+- **Caching**: Product data from external APIs is cached in memory for 5 minutes to reduce API calls and improve load times
+- **Parallel Requests**: All API requests are made in parallel using `Promise.all()` for faster response times
+- **Request Timeouts**: API requests have a 5-second timeout to prevent hanging requests
+- **Optimized Limits**: Product fetching is optimized with reasonable limits per API source
+
+### API Keys Configuration
+
+The application supports API keys for services that require authentication (e.g., RapidAPI):
+
+1. Get your API key from the service provider (e.g., [RapidAPI](https://rapidapi.com/))
+2. Add the keys to your `.env` file:
+   ```bash
+   RAPIDAPI_KEY=your_key_here
+   RAPIDAPI_HOST=your_host_here
+   ```
+3. The application will automatically use these keys when making authenticated API requests
+
+**Note:** API keys are optional. The app works with free public APIs if keys are not provided.
+
 ### Notes for Deployment
 
 - Set `MONGO_URI`, `JWT_SECRET`, and `NODE_ENV=production` in your hosting platform (Render, Railway, etc.).
+- Optionally set `RAPIDAPI_KEY` and `RAPIDAPI_HOST` if using authenticated APIs.
 - Use `npm start` as your start command.
 

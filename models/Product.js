@@ -29,11 +29,6 @@ const productSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    status: {
-      type: String,
-      enum: ['pending', 'approved', 'rejected'],
-      default: 'pending',
-    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

@@ -101,20 +101,6 @@ async function loadAdminProducts() {
       categoryBadge.textContent = p.category;
       titleRow.appendChild(categoryBadge);
 
-      const statusBadge = document.createElement('span');
-      statusBadge.className = 'badge';
-      statusBadge.textContent = p.status;
-      if (p.status === 'pending') {
-        statusBadge.style.background = '#fef3c7';
-        statusBadge.style.color = '#92400e';
-      } else if (p.status === 'approved') {
-        statusBadge.style.background = '#dcfce7';
-        statusBadge.style.color = '#166534';
-      } else {
-        statusBadge.style.background = '#fee2e2';
-        statusBadge.style.color = '#b91c1c';
-      }
-      titleRow.appendChild(statusBadge);
 
       main.appendChild(titleRow);
 
@@ -145,43 +131,7 @@ async function loadAdminProducts() {
 
       el.appendChild(main);
 
-      const actions = document.createElement('div');
-      actions.className = 'product-actions';
-
-      const approveBtn = document.createElement('button');
-      approveBtn.textContent = 'Approve';
-      approveBtn.className = 'secondary';
-      approveBtn.addEventListener('click', async () => {
-        try {
-          await apiRequest(`/admin/products/${p._id}/status`, {
-            method: 'PUT',
-            body: JSON.stringify({ status: 'approved' }),
-          });
-          showToast('Product approved', 'success');
-          await loadAdminProducts();
-        } catch (err) {
-          showToast(err.message, 'error');
-        }
-      });
-
-      const rejectBtn = document.createElement('button');
-      rejectBtn.textContent = 'Reject';
-      rejectBtn.addEventListener('click', async () => {
-        try {
-          await apiRequest(`/admin/products/${p._id}/status`, {
-            method: 'PUT',
-            body: JSON.stringify({ status: 'rejected' }),
-          });
-          showToast('Product rejected', 'success');
-          await loadAdminProducts();
-        } catch (err) {
-          showToast(err.message, 'error');
-        }
-      });
-
-      actions.appendChild(approveBtn);
-      actions.appendChild(rejectBtn);
-      el.appendChild(actions);
+      // Admin can view all products but moderation is no longer needed
 
       adminProductsList.appendChild(el);
     });

@@ -5,6 +5,7 @@ let currentUserRole = null;
 let currentUser = null;
 let allProducts = [];
 let currentCategory = 'all';
+let currentGender = null; // 'men', 'women', or null for all
 
 const toastEl = document.getElementById('toast');
 const cartIcon = document.getElementById('cartIcon');
@@ -256,14 +257,48 @@ async function loadAllProducts() {
   productsGrid.innerHTML = '<p>Loading...</p>';
 
   try {
-    if (token) {
-      allProducts = await apiRequest('/products');
-    } else {
-      // For non-logged users, we'd need a public endpoint
-      // For now, show message
-      productsGrid.innerHTML = '<p>Please login to see products</p>';
-      return;
+    // Load products from external API based on gender filter
+    let externalProducts = [];
+    try {
+      let apiUrl = `${apiBase}/external/products`;
+      if (currentGender === 'men') {
+        apiUrl = `${apiBase}/external/products/men`;
+      } else if (currentGender === 'women') {
+        apiUrl = `${apiBase}/external/products/women`;
+      }
+      
+      const externalRes = await fetch(apiUrl);
+      if (externalRes.ok) {
+        externalProducts = await externalRes.json();
+        // Convert external products to match our format
+        externalProducts = externalProducts.map(p => ({
+          ...p,
+          _id: `external_${p.id}`,
+          external: true,
+          gender: p.gender || 'unisex'
+        }));
+      }
+    } catch (err) {
+      console.error('Failed to load external products:', err);
     }
+
+    // Load products from our database (if logged in)
+    let dbProducts = [];
+    if (token) {
+      try {
+        dbProducts = await apiRequest('/products');
+        // Add gender to DB products if not present
+        dbProducts = dbProducts.map(p => ({
+          ...p,
+          gender: p.gender || 'unisex'
+        }));
+      } catch (err) {
+        console.error('Failed to load DB products:', err);
+      }
+    }
+
+    // Combine external and database products
+    allProducts = [...externalProducts, ...dbProducts];
 
     filterProducts();
   } catch (err) {
@@ -275,6 +310,14 @@ function filterProducts() {
   if (!productsGrid) return;
 
   let filtered = [...allProducts];
+
+  // Filter by gender
+  if (currentGender) {
+    filtered = filtered.filter((p) => {
+      const productGender = p.gender || 'unisex';
+      return productGender === currentGender || productGender === 'unisex';
+    });
+  }
 
   // Filter by category
   if (currentCategory !== 'all') {
@@ -291,10 +334,11 @@ function filterProducts() {
     );
   }
 
-  // Only show approved products for users
-  if (currentUserRole === 'user') {
-    filtered = filtered.filter((p) => p.status === 'approved');
-  }
+  // Filter out products without valid images
+  filtered = filtered.filter((p) => {
+    const imageUrl = p.imageUrl || p.image;
+    return imageUrl && !imageUrl.includes('placeholder') && imageUrl.startsWith('http');
+  });
 
   if (filtered.length === 0) {
     productsGrid.innerHTML = '<p>No products found</p>';
@@ -303,22 +347,31 @@ function filterProducts() {
 
   productsGrid.innerHTML = filtered
     .map(
-      (p) => `
+      (p) => {
+        const imageUrl = p.imageUrl || p.image;
+        const hasValidImage = imageUrl && !imageUrl.includes('placeholder') && imageUrl.startsWith('http');
+        
+        return `
     <div class="product-card">
-      ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" class="product-image" />` : `<div class="product-image-placeholder">No image</div>`}
+      ${hasValidImage 
+        ? `<img src="${imageUrl}" alt="${p.name}" class="product-image" onerror="this.onerror=null; this.parentElement.querySelector('.product-image-placeholder')?.classList.remove('hidden'); this.style.display='none';" />` 
+        : ''}
+      <div class="product-image-placeholder ${hasValidImage ? 'hidden' : ''}">${p.name}</div>
       <div class="product-info">
         <h3 class="product-name">${p.name}</h3>
         <p class="product-price">$${p.price.toFixed(2)}</p>
         <span class="product-category">${p.category}</span>
         ${!p.inStock ? '<span class="badge out-of-stock">Out of stock</span>' : ''}
-        ${p.status === 'pending' && currentUserRole !== 'user' ? '<span class="badge" style="background:#fff3cd;color:#856404;">Pending</span>' : ''}
+        ${p.external ? '<span class="badge" style="background:#e3f2fd;color:#1976d2;">External</span>' : ''}
         <div class="product-actions-inline">
-          ${currentUserRole === 'user' && p.inStock && p.status === 'approved' ? `<button class="btn-primary" onclick="addToCartFromGrid('${p._id}')">Add to Bag</button>` : ''}
-          ${currentUserRole === 'seller' || currentUserRole === 'admin' ? `<button class="btn-secondary" onclick="editProductFromGrid('${p._id}')">Edit</button>` : ''}
+          ${currentUserRole === 'user' && p.inStock ? `<button class="btn-primary" onclick="addToCartFromGrid('${p._id}')">Add to Bag</button>` : ''}
+          ${!token && p.inStock ? `<button class="btn-primary" onclick="window.location.href='/login.html'">Login to Buy</button>` : ''}
+          ${(currentUserRole === 'seller' || currentUserRole === 'admin') && !p.external ? `<button class="btn-secondary" onclick="editProductFromGrid('${p._id}')">Edit</button>` : ''}
         </div>
       </div>
     </div>
-  `
+  `;
+      }
     )
     .join('');
 }
@@ -326,13 +379,24 @@ function filterProducts() {
 window.addToCartFromGrid = function (productId) {
   const product = allProducts.find((p) => p._id === productId);
   if (product) {
-    addToCart(product);
+    // For external products, we need to create a proper cart item
+    const cartItem = {
+      _id: product._id || productId,
+      name: product.name,
+      price: product.price,
+      imageUrl: product.imageUrl || product.image,
+      category: product.category,
+      inStock: product.inStock !== false,
+      external: product.external || false
+    };
+    addToCart(cartItem);
   }
 };
 
 window.editProductFromGrid = function (productId) {
   const product = allProducts.find((p) => p._id === productId);
-  if (product && productForm) {
+  // Only allow editing products from our database (not external)
+  if (product && productForm && !product.external) {
     document.getElementById('productId').value = product._id;
     document.getElementById('productName').value = product.name;
     document.getElementById('productCategory').value = product.category;
@@ -345,14 +409,55 @@ window.editProductFromGrid = function (productId) {
 };
 
 // Category filters
-filterBtns.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    filterBtns.forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentCategory = btn.dataset.category;
-    filterProducts();
+if (filterBtns) {
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCategory = btn.dataset.category;
+      filterProducts();
+    });
   });
-});
+}
+
+// Gender navigation (ALL/MEN/WOMEN)
+const navAll = document.getElementById('navAll');
+const navWomen = document.getElementById('navWomen');
+const navMen = document.getElementById('navMen');
+
+function updateGenderNav(selected) {
+  [navAll, navWomen, navMen].forEach(nav => {
+    if (nav) nav.classList.remove('active');
+  });
+  if (selected) selected.classList.add('active');
+}
+
+if (navAll) {
+  navAll.addEventListener('click', (e) => {
+    e.preventDefault();
+    updateGenderNav(navAll);
+    currentGender = null;
+    loadAllProducts();
+  });
+}
+
+if (navWomen) {
+  navWomen.addEventListener('click', (e) => {
+    e.preventDefault();
+    updateGenderNav(navWomen);
+    currentGender = 'women';
+    loadAllProducts();
+  });
+}
+
+if (navMen) {
+  navMen.addEventListener('click', (e) => {
+    e.preventDefault();
+    updateGenderNav(navMen);
+    currentGender = 'men';
+    loadAllProducts();
+  });
+}
 
 // Search
 if (searchInput) {
@@ -386,9 +491,6 @@ async function loadSellerProducts() {
           <div class="product-title-row">
             <span class="product-name">${p.name}</span>
             <span class="badge ${p.category}">${p.category}</span>
-            ${p.status === 'pending' ? '<span class="badge" style="background:#fff3cd;color:#856404;">Pending</span>' : ''}
-            ${p.status === 'approved' ? '<span class="badge" style="background:#d4edda;color:#155724;">Approved</span>' : ''}
-            ${p.status === 'rejected' ? '<span class="badge" style="background:#f8d7da;color:#721c24;">Rejected</span>' : ''}
             ${!p.inStock ? '<span class="badge out-of-stock">Out of stock</span>' : ''}
           </div>
           ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="max-width:100px;border-radius:4px;margin-top:8px;" />` : ''}

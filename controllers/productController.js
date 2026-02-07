@@ -39,8 +39,8 @@ const getProducts = async (req, res) => {
         createdAt: -1,
       });
     } else {
-      // regular user sees only approved products
-      products = await Product.find({ status: 'approved' }).sort({
+      // regular user sees all products
+      products = await Product.find().sort({
         createdAt: -1,
       });
     }
@@ -58,10 +58,6 @@ const getProductById = async (req, res) => {
 
     if (req.user.role === 'seller') {
       query.owner = req.user._id;
-    }
-
-    if (req.user.role === 'user') {
-      query.status = 'approved';
     }
 
     const product = await Product.findOne(query);
@@ -88,7 +84,7 @@ const updateProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const { name, description, category, price, inStock, imageUrl, status } =
+    const { name, description, category, price, inStock, imageUrl } =
       req.body;
 
     // Sellers can only modify their own products
@@ -101,11 +97,6 @@ const updateProduct = async (req, res) => {
     if (price !== undefined) product.price = price;
     if (inStock !== undefined) product.inStock = inStock;
     if (imageUrl !== undefined) product.imageUrl = imageUrl;
-
-    // Only admin can directly change status here
-    if (status !== undefined && req.user.role === 'admin') {
-      product.status = status;
-    }
 
     await product.save();
 

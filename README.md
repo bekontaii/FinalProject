@@ -1,238 +1,155 @@
-## Online Shop API (Clothes, Gadgets, Cosmetics)
+🛒 Online Shop API
 
-Full-stack online shop application themed around clothes, gadgets, and cosmetics.  
-Built with **Node.js**, **Express.js**, **MongoDB**, and **Mongoose**, with a modern **HTML/CSS/JS** frontend inspired by ASOS design, following the final project requirements (`Final Project Requirements.pdf`).
+Full-stack online shop application for clothes, gadgets, and cosmetics.
 
-### Project Overview
+ Live demo:
+https://finalproject-f97z.onrender.com/
 
-- **Tech stack**: Node.js, Express.js, MongoDB, Mongoose, JWT, bcrypt, express-validator.
-- **User Roles**: 
-  - **User (Buyer)**: Browse and purchase approved products, manage shopping cart
-  - **Seller**: Create, edit, and manage their own products (pending admin approval)
-  - **Admin**: Approve/reject products, manage all products
-- **Resources**:
-  - `User`: name, email, password (hashed), role (user/seller/admin)
-  - `Product`: name, description, category (clothes/gadgets/cosmetics), price, inStock, imageUrl, status (pending/approved/rejected), owner
-- **Features**:
-  - JWT-based authentication with role-based access control
-  - Shopping cart (localStorage-based)
-  - Product image support
-  - Admin moderation panel
-  - Separate login/register page
-  - Modern, responsive UI design
+ Tech Stack
 
-### Setup & Installation
+Backend: Node.js, Express.js
 
-1. Clone the project and install dependencies:
+Database: MongoDB (Atlas)
 
-```bash
-npm install
-```
+ORM: Mongoose
 
-2. Create a `.env` file in the project root:
+Auth: JWT, bcrypt
 
-```bash
-PORT=5000
+Validation: express-validator
+
+Frontend: HTML, CSS, Vanilla JavaScript
+
+Deployment: Render
+
+ User Roles
+
+User (Buyer)
+
+View approved products
+
+Add products to cart
+
+Seller
+
+Create and manage own products
+
+Admin
+
+
+
+Manage all products
+
+ Main Resources
+User
+
+name
+
+email
+
+password (hashed)
+
+role (user / seller / admin)
+
+Product
+
+name
+
+description
+
+category (clothes / gadgets / cosmetics)
+
+price
+
+inStock
+
+imageUrl
+
+status (pending / approved / rejected)
+
+owner
+
+ Authentication
+
+JWT-based authentication
+
+Protected routes with role-based access
+
+Admin role is assigned manually in database
+
+ API Endpoints
+Auth (Public)
+
+POST /api/auth/register — register user
+
+POST /api/auth/login — login user
+
+User (Private)
+
+GET /api/users/profile — get profile
+
+PUT /api/users/profile — update profile
+
+Products (Private)
+
+POST /api/products — create product (seller/admin)
+
+GET /api/products — get products (role-based)
+
+GET /api/products/:id — get product by id
+
+PUT /api/products/:id — update product
+
+DELETE /api/products/:id — delete product
+
+Admin (Admin only)
+
+GET /api/admin/products — all products
+
+PUT /api/admin/products/:id/status — approve or reject product
+
+🖥 Frontend Features
+
+Product catalog
+
+Category filtering
+
+Search by name
+
+Shopping cart (localStorage)
+
+Role-based UI
+
+Responsive design
+
+Admin panel
+
+⚙️ Environment Variables
+
+Required for deployment:
+
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-NODE_ENV=development
+NODE_ENV=production
 
-# API Keys (optional - for APIs that require authentication)
-# Get your RapidAPI key from: https://rapidapi.com/
-RAPIDAPI_KEY=your_rapidapi_key_here
-RAPIDAPI_HOST=your_rapidapi_host_here
-```
-
-**Note:** `RAPIDAPI_KEY` and `RAPIDAPI_HOST` are optional. If not provided, the app will use free public APIs without authentication.
-
-3. Run the server:
-
-```bash
-npm run dev
-# or
+ Run Locally
+npm install
 npm start
-```
 
-The API will be available at `http://localhost:5000`.  
-The frontend shop UI will be available at:
-- **Main Shop**: `http://localhost:5000/` - Browse products, manage cart
-- **Login/Register**: `http://localhost:5000/login.html` - Authentication page
-- **Admin Panel**: `http://localhost:5000/admin.html` - Product moderation (admin only)
 
-### API Documentation
+Server runs on:
 
-All JSON bodies are sent with `Content-Type: application/json`.  
-Protected routes require an `Authorization: Bearer <token>` header from the login/register response.
+http://localhost:5000
 
-#### 1. Authentication Routes (Public)
+Project Status
 
-- **Register**
-  - **Method**: `POST`
-  - **Endpoint**: `/api/auth/register`
-  - **Body**:
-    ```json
-    {
-      "name": "Alice",
-      "email": "alice@example.com",
-      "password": "secret123",
-      "role": "user"
-    }
-    ```
-  - **Note**: `role` can be `"user"` (buyer) or `"seller"`. Admin role must be set manually in database.
-  - **Response**: user data + JWT token.
+Authentication ✔
 
-- **Login**
-  - **Method**: `POST`
-  - **Endpoint**: `/api/auth/login`
-  - **Body**:
-    ```json
-    {
-      "email": "alice@example.com",
-      "password": "secret123"
-    }
-    ```
-  - **Response**: user data + JWT token.
+Authorization ✔
 
-#### 2. User Routes (Private)
+CRUD operations ✔
 
-- **Get Profile**
-  - **Method**: `GET`
-  - **Endpoint**: `/api/users/profile`
-  - **Headers**: `Authorization: Bearer <token>`
-  - **Response**: current user info.
+MongoDB integration ✔
 
-- **Update Profile**
-  - **Method**: `PUT`
-  - **Endpoint**: `/api/users/profile`
-  - **Headers**: `Authorization: Bearer <token>`
-  - **Body**:
-    ```json
-    {
-      "name": "Alice Updated"
-    }
-    ```
-  - **Response**: updated user info.
+Deployment ✔
 
-#### 3. Product Routes (Second Resource, Private)
-
-Base path: `/api/products`
-
-- **Create Product** (Seller/Admin only)
-  - **Method**: `POST`
-  - **Endpoint**: `/api/products`
-  - **Headers**: `Authorization: Bearer <token>`
-  - **Body**:
-    ```json
-    {
-      "name": "Red T-Shirt",
-      "description": "Comfortable cotton t-shirt",
-      "category": "clothes",
-      "price": 19.99,
-      "inStock": true,
-      "imageUrl": "https://example.com/image.jpg"
-    }
-    ```
-  - **Note**: New products start with `status: "pending"` and require admin approval.
-
-- **Get All Products**
-  - **Method**: `GET`
-  - **Endpoint**: `/api/products`
-  - **Headers**: `Authorization: Bearer <token>`
-  - **Note**: 
-    - **Users** see only `approved` products
-    - **Sellers** see only their own products
-    - **Admins** see all products
-
-- **Get Product by ID**
-  - **Method**: `GET`
-  - **Endpoint**: `/api/products/:id`
-  - **Headers**: `Authorization: Bearer <token>`
-
-- **Update Product**
-  - **Method**: `PUT`
-  - **Endpoint**: `/api/products/:id`
-  - **Headers**: `Authorization: Bearer <token>`
-  - **Body**: any subset of:
-    ```json
-    {
-      "name": "New Name",
-      "description": "Updated desc",
-      "category": "gadgets",
-      "price": 29.99,
-      "inStock": false
-    }
-    ```
-
-- **Delete Product** (Owner or Admin only)
-  - **Method**: `DELETE`
-  - **Endpoint**: `/api/products/:id`
-  - **Headers**: `Authorization: Bearer <token>`
-
-#### 4. Admin Routes (Admin only)
-
-- **Get All Products for Moderation**
-  - **Method**: `GET`
-  - **Endpoint**: `/api/admin/products`
-  - **Headers**: `Authorization: Bearer <token>`
-  - **Response**: All products with owner information
-
-- **Update Product Status**
-  - **Method**: `PUT`
-  - **Endpoint**: `/api/admin/products/:id/status`
-  - **Headers**: `Authorization: Bearer <token>`
-  - **Body**:
-    ```json
-    {
-      "status": "approved"
-    }
-    ```
-  - **Note**: `status` can be `"pending"`, `"approved"`, or `"rejected"`
-
-### Frontend Features
-
-- **Shopping Cart**: Add products to cart, view cart in sidebar, checkout (localStorage-based)
-- **Product Filtering**: Filter by category (All, Clothes, Gadgets, Cosmetics)
-- **Search**: Search products by name or description
-- **Role-based UI**: 
-  - Users see "Add to Bag" buttons
-  - Sellers see product management section
-  - Admins see link to admin panel
-- **Product Images**: Display product images in grid and cart
-- **Responsive Design**: Works on desktop and mobile devices
-
-### Validation & Error Handling
-
-- Uses `express-validator` to validate fields like email, password, product name, category, and price.
-- Global error handling middleware:
-  - Returns **400** for validation errors.
-  - Returns **401** for unauthorized access (missing/invalid token).
-  - Returns **404** when a resource is not found.
-  - Returns **500** for server errors.
-
-### Performance Optimizations
-
-- **Caching**: Product data from external APIs is cached in memory for 5 minutes to reduce API calls and improve load times
-- **Parallel Requests**: All API requests are made in parallel using `Promise.all()` for faster response times
-- **Request Timeouts**: API requests have a 5-second timeout to prevent hanging requests
-- **Optimized Limits**: Product fetching is optimized with reasonable limits per API source
-
-### API Keys Configuration
-
-The application supports API keys for services that require authentication (e.g., RapidAPI):
-
-1. Get your API key from the service provider (e.g., [RapidAPI](https://rapidapi.com/))
-2. Add the keys to your `.env` file:
-   ```bash
-   RAPIDAPI_KEY=your_key_here
-   RAPIDAPI_HOST=your_host_here
-   ```
-3. The application will automatically use these keys when making authenticated API requests
-
-**Note:** API keys are optional. The app works with free public APIs if keys are not provided.
-
-### Notes for Deployment
-
-- Set `MONGO_URI`, `JWT_SECRET`, and `NODE_ENV=production` in your hosting platform (Render, Railway, etc.).
-- Optionally set `RAPIDAPI_KEY` and `RAPIDAPI_HOST` if using authenticated APIs.
-- Use `npm start` as your start command.
-
+ 

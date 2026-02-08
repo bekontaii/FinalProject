@@ -1,4 +1,4 @@
-🛒 Online Shop API
+ Online Shop API
 
 Full-stack online shop application for clothes, gadgets, and cosmetics.
 
@@ -123,7 +123,7 @@ Responsive design
 
 Admin panel
 
-⚙️ Environment Variables
+ Environment Variables
 
 Required for deployment:
 

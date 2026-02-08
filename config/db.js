@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const url = 'mongodb+srv://admin:<db_password>@bekarys.oilyaec.mongodb.net/?appName=bekarys'
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI);

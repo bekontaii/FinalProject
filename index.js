@@ -14,30 +14,24 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 const app = express();
 
-// Connect to MongoDB
 connectDB();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Serve frontend
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Basic health check (API)
 app.get('/api/health', (req, res) => {
   res.json({ message: 'Online Shop API is running' });
 });
 
-// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/external', externalApiRoutes);
 
-// Error handling
 app.use(notFound);
 app.use(errorHandler);
 

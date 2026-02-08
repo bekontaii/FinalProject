@@ -1,7 +1,6 @@
 const { validationResult } = require('express-validator');
 const Product = require('../models/Product');
 
-// GET /api/admin/products
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find()

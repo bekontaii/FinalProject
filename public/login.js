@@ -119,7 +119,6 @@ registerForm.addEventListener('submit', async (e) => {
   }
 });
 
-// Redirect if already logged in
 if (token) {
   window.location.href = '/';
 }

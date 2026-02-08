@@ -8,7 +8,6 @@ const generateToken = (id) =>
     expiresIn: '7d',
   });
 
-// POST /api/auth/register
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -31,7 +30,6 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Only allow explicit 'seller'; 'admin' should be created manually or upgraded by admin
     let finalRole = 'user';
     if (role === 'seller') {
       finalRole = 'seller';
@@ -61,7 +59,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// POST /api/auth/login
 const loginUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

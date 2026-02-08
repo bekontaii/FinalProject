@@ -1,12 +1,10 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
 
-// GET /api/users/profile
 const getProfile = async (req, res) => {
   return res.json(req.user);
 };
 
-// PUT /api/users/profile
 const updateProfile = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

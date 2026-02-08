@@ -1,7 +1,6 @@
 const { validationResult } = require('express-validator');
 const Product = require('../models/Product');
 
-// POST /api/products
 const createProduct = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -28,7 +27,6 @@ const createProduct = async (req, res) => {
   }
 };
 
-// GET /api/products
 const getProducts = async (req, res) => {
   try {
     let products;
@@ -39,7 +37,6 @@ const getProducts = async (req, res) => {
         createdAt: -1,
       });
     } else {
-      // regular user sees all products
       products = await Product.find().sort({
         createdAt: -1,
       });
@@ -51,7 +48,6 @@ const getProducts = async (req, res) => {
   }
 };
 
-// GET /api/products/:id
 const getProductById = async (req, res) => {
   try {
     let query = { _id: req.params.id };
@@ -71,7 +67,6 @@ const getProductById = async (req, res) => {
   }
 };
 
-// PUT /api/products/:id
 const updateProduct = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -87,7 +82,6 @@ const updateProduct = async (req, res) => {
     const { name, description, category, price, inStock, imageUrl } =
       req.body;
 
-    // Sellers can only modify their own products
     if (req.user.role === 'seller' && product.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Forbidden' });
     }
@@ -107,7 +101,6 @@ const updateProduct = async (req, res) => {
   }
 };
 
-// DELETE /api/products/:id
 const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);

@@ -101,8 +101,8 @@ function updateCartUI() {
       cartItems.innerHTML = '<p class="empty-cart">Your bag is empty</p>';
     } else {
       cartItems.innerHTML = cart
-        .map(
-          (item) => `
+          .map(
+              (item) => `
         <div class="cart-item">
           ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" class="cart-item-image" />` : '<div class="cart-item-image" style="background: #f5f5f5;"></div>'}
           <div class="cart-item-info">
@@ -112,8 +112,8 @@ function updateCartUI() {
           </div>
         </div>
       `
-        )
-        .join('');
+          )
+          .join('');
     }
   }
 }
@@ -163,7 +163,7 @@ function showToast(message, type = 'info') {
   if (!toastEl) return;
   toastEl.textContent = message;
   toastEl.style.background =
-    type === 'error' ? '#c00' : type === 'success' ? '#0a0' : '#000';
+      type === 'error' ? '#c00' : type === 'success' ? '#0a0' : '#000';
   toastEl.hidden = false;
   toastEl.classList.add('show');
   setTimeout(() => {
@@ -193,9 +193,9 @@ async function apiRequest(path, options = {}) {
 
   if (!res.ok) {
     const message =
-      data?.message ||
-      (data?.errors && data.errors.map((e) => e.msg).join(', ')) ||
-      `Request failed (${res.status})`;
+        data?.message ||
+        (data?.errors && data.errors.map((e) => e.msg).join(', ')) ||
+        `Request failed (${res.status})`;
     throw new Error(message);
   }
 
@@ -266,7 +266,7 @@ async function loadAllProducts() {
       } else if (currentGender === 'women') {
         apiUrl = `${apiBase}/external/products/women`;
       }
-      
+
       const externalRes = await fetch(apiUrl);
       if (externalRes.ok) {
         externalProducts = await externalRes.json();
@@ -328,9 +328,9 @@ function filterProducts() {
   if (searchInput && searchInput.value.trim()) {
     const search = searchInput.value.toLowerCase();
     filtered = filtered.filter(
-      (p) =>
-        p.name.toLowerCase().includes(search) ||
-        (p.description && p.description.toLowerCase().includes(search))
+        (p) =>
+            p.name.toLowerCase().includes(search) ||
+            (p.description && p.description.toLowerCase().includes(search))
     );
   }
 
@@ -346,16 +346,16 @@ function filterProducts() {
   }
 
   productsGrid.innerHTML = filtered
-    .map(
-      (p) => {
-        const imageUrl = p.imageUrl || p.image;
-        const hasValidImage = imageUrl && !imageUrl.includes('placeholder') && imageUrl.startsWith('http');
-        
-        return `
+      .map(
+          (p) => {
+            const imageUrl = p.imageUrl || p.image;
+            const hasValidImage = imageUrl && !imageUrl.includes('placeholder') && imageUrl.startsWith('http');
+
+            return `
     <div class="product-card">
-      ${hasValidImage 
-        ? `<img src="${imageUrl}" alt="${p.name}" class="product-image" onerror="this.onerror=null; this.parentElement.querySelector('.product-image-placeholder')?.classList.remove('hidden'); this.style.display='none';" />` 
-        : ''}
+      ${hasValidImage
+                ? `<img src="${imageUrl}" alt="${p.name}" class="product-image" onerror="this.onerror=null; this.parentElement.querySelector('.product-image-placeholder')?.classList.remove('hidden'); this.style.display='none';" />`
+                : ''}
       <div class="product-image-placeholder ${hasValidImage ? 'hidden' : ''}">${p.name}</div>
       <div class="product-info">
         <h3 class="product-name">${p.name}</h3>
@@ -371,9 +371,9 @@ function filterProducts() {
       </div>
     </div>
   `;
-      }
-    )
-    .join('');
+          }
+      )
+      .join('');
 }
 
 window.addToCartFromGrid = function (productId) {
@@ -484,8 +484,8 @@ async function loadSellerProducts() {
     }
 
     sellerProductsList.innerHTML = products
-      .map(
-        (p) => `
+        .map(
+            (p) => `
       <div class="product-item">
         <div class="product-main">
           <div class="product-title-row">
@@ -503,8 +503,8 @@ async function loadSellerProducts() {
         </div>
       </div>
     `
-      )
-      .join('');
+        )
+        .join('');
   } catch (err) {
     sellerProductsList.innerHTML = `<p style="color:#c00;">${err.message}</p>`;
   }

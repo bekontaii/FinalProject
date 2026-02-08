@@ -131,7 +131,6 @@ async function loadAdminProducts() {
 
       el.appendChild(main);
 
-      // Admin can view all products but moderation is no longer needed
 
       adminProductsList.appendChild(el);
     });

@@ -107,7 +107,7 @@ GET /api/admin/products — all products
 
 PUT /api/admin/products/:id/status — approve or reject product
 
-🖥 Frontend Features
+ Frontend Features
 
 Product catalog
 
@@ -123,7 +123,7 @@ Responsive design
 
 Admin panel
 
- Environment Variables
+Environment Variables
 
 Required for deployment:
 
